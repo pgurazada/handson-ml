@@ -9,7 +9,7 @@
 
 # First, let's make sure this notebook works well in both python 2 and 3, import a few common modules, ensure MatplotLib plots figures inline and prepare a function to save the figures:
 
-# In[71]:
+# In[1]:
 
 
 # To support both python 2 and python 3
@@ -52,7 +52,7 @@ warnings.filterwarnings(action="ignore", module="scipy", message="^internal gels
 
 # # Linear regression using the Normal Equation
 
-# In[18]:
+# In[2]:
 
 
 import numpy as np
@@ -61,7 +61,7 @@ X = 2 * np.random.rand(100, 1)
 y = 4 + 3 * X + np.random.randn(100, 1)
 
 
-# In[72]:
+# In[4]:
 
 
 plt.plot(X, y, "b.")
@@ -72,20 +72,20 @@ save_fig("generated_data_plot")
 plt.show()
 
 
-# In[74]:
+# In[6]:
 
 
 X_b = np.c_[np.ones((100, 1)), X]  # add x0 = 1 to each instance
 theta_best = np.linalg.inv(X_b.T.dot(X_b)).dot(X_b.T).dot(y)
 
 
-# In[75]:
+# In[7]:
 
 
 theta_best
 
 
-# In[76]:
+# In[8]:
 
 
 X_new = np.array([[0], [2]])
@@ -94,7 +94,7 @@ y_predict = X_new_b.dot(theta_best)
 y_predict
 
 
-# In[77]:
+# In[9]:
 
 
 plt.plot(X_new, y_predict, "r-")
@@ -105,7 +105,7 @@ plt.show()
 
 # The figure in the book actually corresponds to the following code, with a legend and axis labels:
 
-# In[78]:
+# In[10]:
 
 
 plt.plot(X_new, y_predict, "r-", linewidth=2, label="Predictions")
@@ -118,7 +118,7 @@ save_fig("linear_model_predictions")
 plt.show()
 
 
-# In[25]:
+# In[11]:
 
 
 from sklearn.linear_model import LinearRegression
@@ -127,7 +127,7 @@ lin_reg.fit(X, y)
 lin_reg.intercept_, lin_reg.coef_
 
 
-# In[26]:
+# In[12]:
 
 
 lin_reg.predict(X_new)
@@ -135,7 +135,7 @@ lin_reg.predict(X_new)
 
 # The `LinearRegression` class is based on the `scipy.linalg.lstsq()` function (the name stands for "least squares"), which you could call directly:
 
-# In[27]:
+# In[13]:
 
 
 theta_best_svd, residuals, rank, s = np.linalg.lstsq(X_b, y, rcond=1e-6)
@@ -144,7 +144,7 @@ theta_best_svd
 
 # This function computes $\mathbf{X}^+\mathbf{y}$, where $\mathbf{X}^{+}$ is the _pseudoinverse_ of $\mathbf{X}$ (specifically the Moore-Penrose inverse). You can use `np.linalg.pinv()` to compute the pseudoinverse directly:
 
-# In[28]:
+# In[14]:
 
 
 np.linalg.pinv(X_b).dot(y)
@@ -154,7 +154,7 @@ np.linalg.pinv(X_b).dot(y)
 
 # # Linear regression using batch gradient descent
 
-# In[29]:
+# In[15]:
 
 
 eta = 0.1
@@ -167,19 +167,19 @@ for iteration in range(n_iterations):
     theta = theta - eta * gradients
 
 
-# In[31]:
+# In[16]:
 
 
 theta
 
 
-# In[32]:
+# In[17]:
 
 
 X_new_b.dot(theta)
 
 
-# In[33]:
+# In[18]:
 
 
 theta_path_bgd = []
@@ -202,7 +202,7 @@ def plot_gradient_descent(theta, eta, theta_path=None):
     plt.title(r"$\eta = {}$".format(eta), fontsize=16)
 
 
-# In[34]:
+# In[19]:
 
 
 np.random.seed(42)
@@ -220,7 +220,7 @@ plt.show()
 
 # # Stochastic Gradient Descent
 
-# In[35]:
+# In[20]:
 
 
 theta_path_sgd = []
@@ -228,7 +228,7 @@ m = len(X_b)
 np.random.seed(42)
 
 
-# In[36]:
+# In[21]:
 
 
 n_epochs = 50
@@ -261,13 +261,13 @@ save_fig("sgd_plot")                                 # not shown
 plt.show()                                           # not shown
 
 
-# In[37]:
+# In[22]:
 
 
 theta
 
 
-# In[38]:
+# In[23]:
 
 
 from sklearn.linear_model import SGDRegressor
@@ -275,7 +275,7 @@ sgd_reg = SGDRegressor(max_iter=50, penalty=None, eta0=0.1, random_state=42)
 sgd_reg.fit(X, y.ravel())
 
 
-# In[39]:
+# In[24]:
 
 
 sgd_reg.intercept_, sgd_reg.coef_
@@ -283,7 +283,7 @@ sgd_reg.intercept_, sgd_reg.coef_
 
 # # Mini-batch gradient descent
 
-# In[40]:
+# In[25]:
 
 
 theta_path_mgd = []
@@ -313,13 +313,13 @@ for epoch in range(n_iterations):
         theta_path_mgd.append(theta)
 
 
-# In[41]:
+# In[26]:
 
 
 theta
 
 
-# In[42]:
+# In[27]:
 
 
 theta_path_bgd = np.array(theta_path_bgd)
@@ -327,7 +327,7 @@ theta_path_sgd = np.array(theta_path_sgd)
 theta_path_mgd = np.array(theta_path_mgd)
 
 
-# In[43]:
+# In[28]:
 
 
 plt.figure(figsize=(7,4))
@@ -344,7 +344,7 @@ plt.show()
 
 # # Polynomial regression
 
-# In[44]:
+# In[29]:
 
 
 import numpy as np
@@ -353,7 +353,7 @@ import numpy.random as rnd
 np.random.seed(42)
 
 
-# In[45]:
+# In[30]:
 
 
 m = 100
@@ -361,7 +361,7 @@ X = 6 * np.random.rand(m, 1) - 3
 y = 0.5 * X**2 + X + 2 + np.random.randn(m, 1)
 
 
-# In[46]:
+# In[31]:
 
 
 plt.plot(X, y, "b.")
@@ -372,7 +372,7 @@ save_fig("quadratic_data_plot")
 plt.show()
 
 
-# In[47]:
+# In[32]:
 
 
 from sklearn.preprocessing import PolynomialFeatures
@@ -381,13 +381,13 @@ X_poly = poly_features.fit_transform(X)
 X[0]
 
 
-# In[48]:
+# In[33]:
 
 
 X_poly[0]
 
 
-# In[49]:
+# In[34]:
 
 
 lin_reg = LinearRegression()
@@ -395,7 +395,7 @@ lin_reg.fit(X_poly, y)
 lin_reg.intercept_, lin_reg.coef_
 
 
-# In[50]:
+# In[35]:
 
 
 X_new=np.linspace(-3, 3, 100).reshape(100, 1)
@@ -411,7 +411,7 @@ save_fig("quadratic_predictions_plot")
 plt.show()
 
 
-# In[51]:
+# In[36]:
 
 
 from sklearn.preprocessing import StandardScaler
@@ -439,7 +439,7 @@ save_fig("high_degree_polynomials_plot")
 plt.show()
 
 
-# In[52]:
+# In[37]:
 
 
 from sklearn.metrics import mean_squared_error
@@ -462,7 +462,7 @@ def plot_learning_curves(model, X, y):
     plt.ylabel("RMSE", fontsize=14)              # not shown
 
 
-# In[53]:
+# In[38]:
 
 
 lin_reg = LinearRegression()
@@ -472,7 +472,7 @@ save_fig("underfitting_learning_curves_plot")   # not shown
 plt.show()                                      # not shown
 
 
-# In[54]:
+# In[39]:
 
 
 from sklearn.pipeline import Pipeline
@@ -490,7 +490,7 @@ plt.show()                        # not shown
 
 # # Regularized models
 
-# In[55]:
+# In[40]:
 
 
 from sklearn.linear_model import Ridge
@@ -530,7 +530,7 @@ save_fig("ridge_regression_plot")
 plt.show()
 
 
-# In[39]:
+# In[41]:
 
 
 from sklearn.linear_model import Ridge
@@ -539,7 +539,7 @@ ridge_reg.fit(X, y)
 ridge_reg.predict([[1.5]])
 
 
-# In[56]:
+# In[42]:
 
 
 sgd_reg = SGDRegressor(max_iter=5, penalty="l2", random_state=42)
@@ -547,7 +547,7 @@ sgd_reg.fit(X, y.ravel())
 sgd_reg.predict([[1.5]])
 
 
-# In[57]:
+# In[43]:
 
 
 ridge_reg = Ridge(alpha=1, solver="sag", random_state=42)
@@ -555,7 +555,7 @@ ridge_reg.fit(X, y)
 ridge_reg.predict([[1.5]])
 
 
-# In[58]:
+# In[44]:
 
 
 from sklearn.linear_model import Lasso
@@ -571,7 +571,7 @@ save_fig("lasso_regression_plot")
 plt.show()
 
 
-# In[59]:
+# In[45]:
 
 
 from sklearn.linear_model import Lasso
@@ -580,7 +580,7 @@ lasso_reg.fit(X, y)
 lasso_reg.predict([[1.5]])
 
 
-# In[60]:
+# In[46]:
 
 
 from sklearn.linear_model import ElasticNet
@@ -589,7 +589,7 @@ elastic_net.fit(X, y)
 elastic_net.predict([[1.5]])
 
 
-# In[61]:
+# In[47]:
 
 
 np.random.seed(42)
@@ -645,7 +645,7 @@ save_fig("early_stopping_plot")
 plt.show()
 
 
-# In[62]:
+# In[48]:
 
 
 from sklearn.base import clone
@@ -667,13 +667,13 @@ for epoch in range(1000):
         best_model = clone(sgd_reg)
 
 
-# In[63]:
+# In[49]:
 
 
 best_epoch, best_model
 
 
-# In[48]:
+# In[51]:
 
 
 get_ipython().magic('matplotlib inline')
@@ -681,7 +681,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 
-# In[49]:
+# In[52]:
 
 
 t1a, t1b, t2a, t2b = -1, 3, -1.5, 1.5
@@ -705,7 +705,7 @@ t1_min, t2_min = t1[t_min_idx], t2[t_min_idx]
 t_init = np.array([[0.25], [-1]])
 
 
-# In[50]:
+# In[53]:
 
 
 def bgd_path(theta, X, y, l1, l2, core = 1, eta = 0.1, n_iterations = 50):
@@ -765,7 +765,14 @@ plt.show()
 
 # # Logistic regression
 
-# In[51]:
+# In[58]:
+
+
+import seaborn as sns
+sns.set_style('ticks')
+
+
+# In[59]:
 
 
 t = np.linspace(-10, 10, 100)
@@ -783,7 +790,7 @@ save_fig("logistic_function_plot")
 plt.show()
 
 
-# In[52]:
+# In[60]:
 
 
 from sklearn import datasets
@@ -791,20 +798,20 @@ iris = datasets.load_iris()
 list(iris.keys())
 
 
-# In[53]:
+# In[61]:
 
 
 print(iris.DESCR)
 
 
-# In[54]:
+# In[62]:
 
 
 X = iris["data"][:, 3:]  # petal width
 y = (iris["target"] == 2).astype(np.int)  # 1 if Iris-Virginica, else 0
 
 
-# In[55]:
+# In[63]:
 
 
 from sklearn.linear_model import LogisticRegression
@@ -812,7 +819,7 @@ log_reg = LogisticRegression(random_state=42)
 log_reg.fit(X, y)
 
 
-# In[56]:
+# In[64]:
 
 
 X_new = np.linspace(0, 3, 1000).reshape(-1, 1)
@@ -824,7 +831,7 @@ plt.plot(X_new, y_proba[:, 0], "b--", linewidth=2, label="Not Iris-Virginica")
 
 # The figure in the book actually is actually a bit fancier:
 
-# In[57]:
+# In[68]:
 
 
 X_new = np.linspace(0, 3, 1000).reshape(-1, 1)
@@ -838,8 +845,8 @@ plt.plot([decision_boundary, decision_boundary], [-1, 2], "k:", linewidth=2)
 plt.plot(X_new, y_proba[:, 1], "g-", linewidth=2, label="Iris-Virginica")
 plt.plot(X_new, y_proba[:, 0], "b--", linewidth=2, label="Not Iris-Virginica")
 plt.text(decision_boundary+0.02, 0.15, "Decision  boundary", fontsize=14, color="k", ha="center")
-plt.arrow(decision_boundary, 0.08, -0.3, 0, head_width=0.05, head_length=0.1, fc='b', ec='b')
-plt.arrow(decision_boundary, 0.92, 0.3, 0, head_width=0.05, head_length=0.1, fc='g', ec='g')
+plt.arrow(decision_boundary, 0.08, -0.3, 0, head_width=0.05, head_length=0.05, fc='b', ec='b')
+plt.arrow(decision_boundary, 0.92, 0.3, 0, head_width=0.05, head_length=0.05, fc='g', ec='g')
 plt.xlabel("Petal width (cm)", fontsize=14)
 plt.ylabel("Probability", fontsize=14)
 plt.legend(loc="center left", fontsize=14)
@@ -848,19 +855,19 @@ save_fig("logistic_regression_plot")
 plt.show()
 
 
-# In[58]:
+# In[69]:
 
 
 decision_boundary
 
 
-# In[59]:
+# In[70]:
 
 
 log_reg.predict([[1.7], [1.5]])
 
 
-# In[60]:
+# In[71]:
 
 
 from sklearn.linear_model import LogisticRegression
@@ -901,7 +908,7 @@ save_fig("logistic_regression_contour_plot")
 plt.show()
 
 
-# In[61]:
+# In[72]:
 
 
 X = iris["data"][:, (2, 3)]  # petal length, petal width
@@ -911,7 +918,7 @@ softmax_reg = LogisticRegression(multi_class="multinomial",solver="lbfgs", C=10,
 softmax_reg.fit(X, y)
 
 
-# In[62]:
+# In[73]:
 
 
 x0, x1 = np.meshgrid(
@@ -946,13 +953,13 @@ save_fig("softmax_regression_contour_plot")
 plt.show()
 
 
-# In[63]:
+# In[74]:
 
 
 softmax_reg.predict([[5, 2]])
 
 
-# In[64]:
+# In[75]:
 
 
 softmax_reg.predict_proba([[5, 2]])
@@ -969,7 +976,7 @@ softmax_reg.predict_proba([[5, 2]])
 
 # Let's start by loading the data. We will just reuse the Iris dataset we loaded earlier.
 
-# In[65]:
+# In[ ]:
 
 
 X = iris["data"][:, (2, 3)]  # petal length, petal width
@@ -978,7 +985,7 @@ y = iris["target"]
 
 # We need to add the bias term for every instance ($x_0 = 1$):
 
-# In[66]:
+# In[ ]:
 
 
 X_with_bias = np.c_[np.ones([len(X), 1]), X]
@@ -986,7 +993,7 @@ X_with_bias = np.c_[np.ones([len(X), 1]), X]
 
 # And let's set the random seed so the output of this exercise solution is reproducible:
 
-# In[67]:
+# In[ ]:
 
 
 np.random.seed(2042)
@@ -994,7 +1001,7 @@ np.random.seed(2042)
 
 # The easiest option to split the dataset into a training set, a validation set and a test set would be to use Scikit-Learn's `train_test_split()` function, but the point of this exercise is to try understand the algorithms by implementing them manually. So here is one possible implementation:
 
-# In[68]:
+# In[ ]:
 
 
 test_ratio = 0.2
@@ -1017,7 +1024,7 @@ y_test = y[rnd_indices[-test_size:]]
 
 # The targets are currently class indices (0, 1 or 2), but we need target class probabilities to train the Softmax Regression model. Each instance will have target class probabilities equal to 0.0 for all classes except for the target class which will have a probability of 1.0 (in other words, the vector of class probabilities for ay given instance is a one-hot vector). Let's write a small function to convert the vector of class indices into a matrix containing a one-hot vector for each instance:
 
-# In[69]:
+# In[ ]:
 
 
 def to_one_hot(y):
@@ -1030,13 +1037,13 @@ def to_one_hot(y):
 
 # Let's test this function on the first 10 instances:
 
-# In[70]:
+# In[ ]:
 
 
 y_train[:10]
 
 
-# In[71]:
+# In[ ]:
 
 
 to_one_hot(y_train[:10])
@@ -1044,7 +1051,7 @@ to_one_hot(y_train[:10])
 
 # Looks good, so let's create the target class probabilities matrix for the training set and the test set:
 
-# In[72]:
+# In[ ]:
 
 
 Y_train_one_hot = to_one_hot(y_train)
@@ -1056,7 +1063,7 @@ Y_test_one_hot = to_one_hot(y_test)
 # 
 # $\sigma\left(\mathbf{s}(\mathbf{x})\right)_k = \dfrac{\exp\left(s_k(\mathbf{x})\right)}{\sum\limits_{j=1}^{K}{\exp\left(s_j(\mathbf{x})\right)}}$
 
-# In[73]:
+# In[ ]:
 
 
 def softmax(logits):
@@ -1067,7 +1074,7 @@ def softmax(logits):
 
 # We are almost ready to start training. Let's define the number of inputs and outputs:
 
-# In[74]:
+# In[ ]:
 
 
 n_inputs = X_train.shape[1] # == 3 (2 features plus the bias term)
@@ -1087,7 +1094,7 @@ n_outputs = len(np.unique(y_train))   # == 3 (3 iris classes)
 # 
 # Note that $\log\left(\hat{p}_k^{(i)}\right)$ may not be computable if $\hat{p}_k^{(i)} = 0$. So we will add a tiny value $\epsilon$ to $\log\left(\hat{p}_k^{(i)}\right)$ to avoid getting `nan` values.
 
-# In[75]:
+# In[ ]:
 
 
 eta = 0.01
@@ -1110,7 +1117,7 @@ for iteration in range(n_iterations):
 
 # And that's it! The Softmax model is trained. Let's look at the model parameters:
 
-# In[76]:
+# In[ ]:
 
 
 Theta
@@ -1118,7 +1125,7 @@ Theta
 
 # Let's make predictions for the validation set and check the accuracy score:
 
-# In[77]:
+# In[ ]:
 
 
 logits = X_valid.dot(Theta)
@@ -1131,7 +1138,7 @@ accuracy_score
 
 # Well, this model looks pretty good. For the sake of the exercise, let's add a bit of $\ell_2$ regularization. The following training code is similar to the one above, but the loss now has an additional $\ell_2$ penalty, and the gradients have the proper additional term (note that we don't regularize the first element of `Theta` since this corresponds to the bias term). Also, let's try increasing the learning rate `eta`.
 
-# In[78]:
+# In[ ]:
 
 
 eta = 0.1
@@ -1157,7 +1164,7 @@ for iteration in range(n_iterations):
 
 # Because of the additional $\ell_2$ penalty, the loss seems greater than earlier, but perhaps this model will perform better? Let's find out:
 
-# In[79]:
+# In[ ]:
 
 
 logits = X_valid.dot(Theta)
@@ -1172,7 +1179,7 @@ accuracy_score
 
 # Now let's add early stopping. For this we just need to measure the loss on the validation set at every iteration and stop when the error starts growing.
 
-# In[80]:
+# In[ ]:
 
 
 eta = 0.1 
@@ -1209,7 +1216,7 @@ for iteration in range(n_iterations):
         break
 
 
-# In[81]:
+# In[ ]:
 
 
 logits = X_valid.dot(Theta)
@@ -1224,7 +1231,7 @@ accuracy_score
 
 # Now let's plot the model's predictions on the whole dataset:
 
-# In[82]:
+# In[ ]:
 
 
 x0, x1 = np.meshgrid(
@@ -1261,7 +1268,7 @@ plt.show()
 
 # And now let's measure the final model's accuracy on the test set:
 
-# In[83]:
+# In[ ]:
 
 
 logits = X_test.dot(Theta)
