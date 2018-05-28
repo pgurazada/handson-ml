@@ -171,13 +171,13 @@ save_fig("decision_tree_instability_plot")
 plt.show()
 
 
-# In[10]:
+# In[11]:
 
 
 from sklearn.datasets import make_moons
 
 
-# In[21]:
+# In[12]:
 
 
 Xm, ym = make_moons(n_samples=100, noise=0.25, random_state=20130810)
@@ -188,7 +188,7 @@ deep_tree_clf1.fit(Xm, ym)
 deep_tree_clf2.fit(Xm, ym)
 
 
-# In[12]:
+# In[13]:
 
 
 plt.figure(figsize=(11, 4))
@@ -205,7 +205,7 @@ plt.show()
 
 # As can be seen from the above plot, restricting the decision tree allows the model to generalize better. 
 
-# In[13]:
+# In[14]:
 
 
 angle = np.pi / 180 * 20
@@ -213,14 +213,14 @@ rotation_matrix = np.array([[np.cos(angle), -np.sin(angle)], [np.sin(angle), np.
 Xr = X.dot(rotation_matrix)
 
 
-# In[18]:
+# In[15]:
 
 
 tree_clf_r = DecisionTreeClassifier(random_state=20130810)
 tree_clf_r.fit(Xr, y)
 
 
-# In[19]:
+# In[16]:
 
 
 plt.figure(figsize=(8, 3))
@@ -231,7 +231,7 @@ plt.show()
 
 # The above figure shows that a simple rotation of the feature space confuses the decision tree. It now fits a more complex tree even though the data is the same.
 
-# In[20]:
+# In[17]:
 
 
 np.random.seed(20130810)
@@ -239,7 +239,7 @@ Xs = np.random.rand(100, 2) - 0.5
 ys = (Xs[:, 0] > 0).astype(np.float32) * 2
 
 
-# In[22]:
+# In[18]:
 
 
 angle = np.pi / 4
@@ -247,7 +247,7 @@ rotation_matrix = np.array([[np.cos(angle), -np.sin(angle)], [np.sin(angle), np.
 Xsr = Xs.dot(rotation_matrix)
 
 
-# In[23]:
+# In[19]:
 
 
 tree_clf_s = DecisionTreeClassifier(random_state=20130810)
@@ -256,7 +256,7 @@ tree_clf_sr = DecisionTreeClassifier(random_state=20130810)
 tree_clf_sr.fit(Xsr, ys)
 
 
-# In[24]:
+# In[20]:
 
 
 plt.figure(figsize=(11, 4))
@@ -273,7 +273,7 @@ plt.show()
 
 # # Regression trees
 
-# In[25]:
+# In[21]:
 
 
 # Quadratic training set + noise
@@ -284,7 +284,7 @@ y = 4 * (X - 0.5) ** 2
 y = y + np.random.randn(m, 1) / 10
 
 
-# In[26]:
+# In[22]:
 
 
 from sklearn.tree import DecisionTreeRegressor
@@ -293,13 +293,13 @@ tree_reg = DecisionTreeRegressor(max_depth=2, random_state=20130810)
 tree_reg.fit(X, y)
 
 
-# In[27]:
+# In[23]:
 
 
 from sklearn.tree import DecisionTreeRegressor
 
 
-# In[28]:
+# In[24]:
 
 
 tree_reg1 = DecisionTreeRegressor(random_state=20130810, max_depth=2)
@@ -308,7 +308,7 @@ tree_reg1.fit(X, y)
 tree_reg2.fit(X, y)
 
 
-# In[29]:
+# In[25]:
 
 
 def plot_regression_predictions(tree_reg, X, y, axes=[0, 1, -0.2, 1], ylabel="$y$"):
@@ -347,7 +347,7 @@ plt.show()
 
 # As we allow the depth of the tree to increase, we allow the model to 'hug' the training data better. This might impact generalizability (correct an overfit) or improve the model (correct an underfit) based on the data set.
 
-# In[30]:
+# In[26]:
 
 
 export_graphviz(
@@ -359,21 +359,21 @@ export_graphviz(
     )
 
 
-# In[31]:
+# In[27]:
 
 
 tree_reg1 = DecisionTreeRegressor(random_state=20130810)
 tree_reg2 = DecisionTreeRegressor(random_state=20130810, min_samples_leaf=10)
 
 
-# In[32]:
+# In[28]:
 
 
 tree_reg1.fit(X, y)
 tree_reg2.fit(X, y)
 
 
-# In[33]:
+# In[29]:
 
 
 x1 = np.linspace(0, 1, 500).reshape(-1, 1)
@@ -418,7 +418,7 @@ plt.show()
 
 # Adding `random_state=42` to make this notebook's output constant:
 
-# In[34]:
+# In[30]:
 
 
 from sklearn.datasets import make_moons
@@ -428,7 +428,7 @@ X, y = make_moons(n_samples=10000, noise=0.4, random_state=20130810)
 
 # b. Split it into a training set and a test set using `train_test_split()`.
 
-# In[41]:
+# In[31]:
 
 
 from sklearn.model_selection import train_test_split
@@ -438,19 +438,19 @@ X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_
 
 # c. Use grid search with cross-validation (with the help of the `GridSearchCV` class) to find good hyperparameter values for a `DecisionTreeClassifier`. Hint: try various values for `max_leaf_nodes`.
 
-# In[42]:
+# In[32]:
 
 
 from sklearn.model_selection import GridSearchCV
 
 
-# In[43]:
+# In[33]:
 
 
 params = {'max_leaf_nodes': list(range(2, 100)), 'min_samples_split': [2, 3, 4]}
 
 
-# In[45]:
+# In[34]:
 
 
 grid_search_cv = GridSearchCV(DecisionTreeClassifier(random_state=20130810), params, n_jobs=-1, verbose=1)
@@ -458,7 +458,7 @@ grid_search_cv = GridSearchCV(DecisionTreeClassifier(random_state=20130810), par
 grid_search_cv.fit(X_train, y_train)
 
 
-# In[46]:
+# In[35]:
 
 
 grid_search_cv.best_estimator_
@@ -468,7 +468,7 @@ grid_search_cv.best_estimator_
 
 # By default, `GridSearchCV` trains the best model found on the whole training set (you can change this by setting `refit=False`), so we don't need to do it again. We can simply evaluate the model's accuracy:
 
-# In[47]:
+# In[36]:
 
 
 from sklearn.metrics import accuracy_score
@@ -483,13 +483,13 @@ accuracy_score(y_test, y_pred)
 
 # a. Continuing the previous exercise, generate 1,000 subsets of the training set, each containing 100 instances selected randomly. Hint: you can use Scikit-Learn's `ShuffleSplit` class for this.
 
-# In[48]:
+# In[37]:
 
 
 from sklearn.model_selection import ShuffleSplit
 
 
-# In[49]:
+# In[38]:
 
 
 n_trees = 1000 # number of subsets of the data set
@@ -498,11 +498,13 @@ n_instances = 100 # number of examples per tree
 mini_sets = []
 
 
-# In[ ]:
+# Note that by using `ShuffleSplit` it is not guaranteed that the splits will be different.
+
+# In[42]:
 
 
 rs = ShuffleSplit(n_splits=n_trees, test_size=len(X_train) - n_instances, random_state=20130810)
-for mini_train_index, mini_test_index in rs.split(X_train):
+for mini_train_index, _ in rs.split(X_train):
     X_mini_train = X_train[mini_train_index]
     y_mini_train = y_train[mini_train_index]
     mini_sets.append((X_mini_train, y_mini_train))
@@ -510,12 +512,20 @@ for mini_train_index, mini_test_index in rs.split(X_train):
 
 # b. Train one Decision Tree on each subset, using the best hyperparameter values found above. Evaluate these 1,000 Decision Trees on the test set. Since they were trained on smaller sets, these Decision Trees will likely perform worse than the first Decision Tree, achieving only about 80% accuracy.
 
-# In[ ]:
+# In[43]:
 
 
 from sklearn.base import clone
 
+
+# In[44]:
+
+
 forest = [clone(grid_search_cv.best_estimator_) for _ in range(n_trees)]
+
+
+# In[45]:
+
 
 accuracy_scores = []
 
@@ -528,9 +538,11 @@ for tree, (X_mini_train, y_mini_train) in zip(forest, mini_sets):
 np.mean(accuracy_scores)
 
 
+# On an average, each of the trees scores 81% on accuracy 
+
 # c. Now comes the magic. For each test set instance, generate the predictions of the 1,000 Decision Trees, and keep only the most frequent prediction (you can use SciPy's `mode()` function for this). This gives you _majority-vote predictions_ over the test set.
 
-# In[ ]:
+# In[46]:
 
 
 Y_pred = np.empty([n_trees, len(X_test)], dtype=np.uint8)
@@ -539,7 +551,7 @@ for tree_index, tree in enumerate(forest):
     Y_pred[tree_index] = tree.predict(X_test)
 
 
-# In[ ]:
+# In[47]:
 
 
 from scipy.stats import mode
@@ -549,8 +561,10 @@ y_pred_majority_votes, n_votes = mode(Y_pred, axis=0)
 
 # d. Evaluate these predictions on the test set: you should obtain a slightly higher accuracy than your first model (about 0.5 to 1.5% higher). Congratulations, you have trained a Random Forest classifier!
 
-# In[ ]:
+# In[48]:
 
 
 accuracy_score(y_test, y_pred_majority_votes.reshape([-1]))
 
+
+# This is more than a 1% increase in accuracy. Random sub-samples of the original data combined with majority votes on the cumulative decision trees leads to a better outcome

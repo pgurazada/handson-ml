@@ -9,7 +9,7 @@
 
 # First, let's make sure this notebook works well in both python 2 and 3, import a few common modules, ensure MatplotLib plots figures inline and prepare a function to save the figures:
 
-# In[4]:
+# In[1]:
 
 
 # To support both python 2 and python 3
@@ -73,13 +73,20 @@ save_fig("law_of_large_numbers_plot")
 plt.show()
 
 
-# In[8]:
+# The point of this section is to see if the best of the lot predictions from a set of classifiers will perform better than each one of them individually
+
+# In[7]:
 
 
 from sklearn.model_selection import train_test_split
 from sklearn.datasets import make_moons
 
 X, y = make_moons(n_samples=500, noise=0.30, random_state=20130810)
+
+
+# In[8]:
+
+
 X_train, X_test, y_train, y_test = train_test_split(X, y, random_state=42)
 
 
@@ -91,42 +98,25 @@ from sklearn.ensemble import VotingClassifier
 from sklearn.linear_model import LogisticRegression
 from sklearn.svm import SVC
 
-log_clf = LogisticRegression(random_state=20130810)
-rnd_clf = RandomForestClassifier(random_state=20130810)
-svm_clf = SVC(random_state=20130810)
-
-voting_clf = VotingClassifier(
-    estimators=[('lr', log_clf), ('rf', rnd_clf), ('svc', svm_clf)],
-    voting='hard')
-
 
 # In[10]:
 
 
-voting_clf.fit(X_train, y_train)
+log_clf = LogisticRegression(random_state=20130810)
+rnd_clf = RandomForestClassifier(random_state=20130810)
+svm_clf = SVC(random_state=20130810)
 
 
 # In[11]:
 
 
-from sklearn.metrics import accuracy_score
-
-for clf in (log_clf, rnd_clf, svm_clf, voting_clf):
-    clf.fit(X_train, y_train)
-    y_pred = clf.predict(X_test)
-    print(clf.__class__.__name__, accuracy_score(y_test, y_pred))
+voting_clf = VotingClassifier(estimators=[('lr', log_clf), ('rf', rnd_clf), ('svc', svm_clf)],
+                              voting='hard')
 
 
 # In[12]:
 
 
-log_clf = LogisticRegression(random_state=20130810)
-rnd_clf = RandomForestClassifier(random_state=20130810)
-svm_clf = SVC(probability=True, random_state=20130810)
-
-voting_clf = VotingClassifier(
-    estimators=[('lr', log_clf), ('rf', rnd_clf), ('svc', svm_clf)],
-    voting='soft')
 voting_clf.fit(X_train, y_train)
 
 
@@ -141,29 +131,69 @@ for clf in (log_clf, rnd_clf, svm_clf, voting_clf):
     print(clf.__class__.__name__, accuracy_score(y_test, y_pred))
 
 
-# # Bagging ensembles
+# The above results show tha the `VotingClassifier` does better than the logistic classifier or the SVC. Random forest classifier still does best. Not sure why we would want to club this with the lower performers. This is one of the cases where the wisdom of the crowd is not good
 
 # In[14]:
+
+
+log_clf = LogisticRegression(random_state=20130810)
+rnd_clf = RandomForestClassifier(random_state=20130810)
+svm_clf = SVC(probability=True, random_state=20130810)
+
+
+# In[15]:
+
+
+voting_clf = VotingClassifier(estimators=[('lr', log_clf), ('rf', rnd_clf), ('svc', svm_clf)],
+                              voting='soft')
+
+voting_clf.fit(X_train, y_train)
+
+
+# In[16]:
+
+
+from sklearn.metrics import accuracy_score
+
+for clf in (log_clf, rnd_clf, svm_clf, voting_clf):
+    clf.fit(X_train, y_train)
+    y_pred = clf.predict(X_test)
+    print(clf.__class__.__name__, accuracy_score(y_test, y_pred))
+
+
+# In a competitive scenario, this might be a good option, but the interpretability of the model takes a beating. Also, we do not always chase accuracy with a passion in business settings.
+
+# # Bagging ensembles
+
+# In[17]:
 
 
 from sklearn.ensemble import BaggingClassifier
 from sklearn.tree import DecisionTreeClassifier
 
-bag_clf = BaggingClassifier(
-    DecisionTreeClassifier(random_state=42), n_estimators=500,
-    max_samples=100, bootstrap=True, n_jobs=-1, random_state=42)
+
+# In[18]:
+
+
+bag_clf = BaggingClassifier(DecisionTreeClassifier(random_state=42), 
+                            n_estimators=500,
+                            max_samples=100, 
+                            bootstrap=True, 
+                            n_jobs=-1, 
+                            random_state=20130810)
+
 bag_clf.fit(X_train, y_train)
 y_pred = bag_clf.predict(X_test)
 
 
-# In[15]:
+# In[19]:
 
 
 from sklearn.metrics import accuracy_score
 print(accuracy_score(y_test, y_pred))
 
 
-# In[19]:
+# In[20]:
 
 
 bag_clf = BaggingClassifier(DecisionTreeClassifier(), 
@@ -173,26 +203,26 @@ bag_clf = BaggingClassifier(DecisionTreeClassifier(),
                             oob_score=True)
 
 
-# In[20]:
+# In[21]:
 
 
 bag_clf.fit(X_train, y_train)
 
 
-# In[21]:
+# In[22]:
 
 
 bag_clf.oob_score_
 
 
-# In[22]:
+# In[23]:
 
 
 y_pred = bag_clf.predict(X_test)
 accuracy_score(y_test, y_pred)
 
 
-# In[16]:
+# In[24]:
 
 
 tree_clf = DecisionTreeClassifier(random_state=20130810)
@@ -201,7 +231,7 @@ y_pred_tree = tree_clf.predict(X_test)
 print(accuracy_score(y_test, y_pred_tree))
 
 
-# In[17]:
+# In[25]:
 
 
 from matplotlib.colors import ListedColormap
@@ -224,7 +254,7 @@ def plot_decision_boundary(clf, X, y, axes=[-1.5, 2.5, -1, 1.5], alpha=0.5, cont
     plt.ylabel(r"$x_2$", fontsize=18, rotation=0)
 
 
-# In[18]:
+# In[26]:
 
 
 plt.figure(figsize=(11,4))
@@ -240,28 +270,33 @@ plt.show()
 
 # # Random Forests
 
-# In[23]:
+# In[27]:
 
 
-bag_clf = BaggingClassifier(
-    DecisionTreeClassifier(splitter="random", max_leaf_nodes=16, random_state=42),
-    n_estimators=500, max_samples=1.0, bootstrap=True, n_jobs=-1, random_state=42)
+bag_clf = BaggingClassifier(DecisionTreeClassifier(splitter="random", 
+                                                   max_leaf_nodes=16, 
+                                                   random_state=20130810),
+                            n_estimators=500, 
+                            max_samples=1.0, 
+                            bootstrap=True, 
+                            n_jobs=-1, 
+                            random_state=20130810)
 
 
-# In[24]:
+# In[28]:
 
 
 bag_clf.fit(X_train, y_train)
 y_pred = bag_clf.predict(X_test)
 
 
-# In[25]:
+# In[29]:
 
 
 accuracy_score(y_test, y_pred)
 
 
-# In[26]:
+# In[30]:
 
 
 from sklearn.ensemble import RandomForestClassifier
@@ -275,19 +310,19 @@ rnd_clf.fit(X_train, y_train)
 y_pred_rf = rnd_clf.predict(X_test)
 
 
-# In[28]:
+# In[31]:
 
 
 accuracy_score(y_test, y_pred_rf)
 
 
-# In[27]:
+# In[32]:
 
 
 np.sum(y_pred == y_pred_rf) / len(y_pred)  # almost identical predictions
 
 
-# In[29]:
+# In[33]:
 
 
 from sklearn.datasets import load_iris
@@ -295,7 +330,7 @@ from sklearn.datasets import load_iris
 iris = load_iris()
 
 
-# In[30]:
+# In[34]:
 
 
 rnd_clf = RandomForestClassifier(n_estimators=500, 
@@ -305,20 +340,20 @@ rnd_clf = RandomForestClassifier(n_estimators=500,
 rnd_clf.fit(iris["data"], iris["target"])
 
 
-# In[31]:
+# In[35]:
 
 
 for name, score in zip(iris["feature_names"], rnd_clf.feature_importances_):
     print(name, score)
 
 
-# In[32]:
+# In[36]:
 
 
 rnd_clf.feature_importances_
 
 
-# In[33]:
+# In[37]:
 
 
 plt.figure(figsize=(6, 4))
@@ -332,25 +367,35 @@ for i in range(15):
 plt.show()
 
 
+# The plots of decision boundaries and stuff is a good technique to understand the model, but does not scale.
+
 # ## Out-of-Bag evaluation
 
-# In[34]:
+# In[39]:
 
 
-bag_clf = BaggingClassifier(
-    DecisionTreeClassifier(random_state=42), n_estimators=500,
-    bootstrap=True, n_jobs=-1, oob_score=True, random_state=40)
+bag_clf = BaggingClassifier(DecisionTreeClassifier(random_state=42), 
+                            n_estimators=500,
+                            bootstrap=True, 
+                            n_jobs=-1, 
+                            oob_score=True, 
+                            random_state=20130810)
+
+
+# In[40]:
+
+
 bag_clf.fit(X_train, y_train)
 bag_clf.oob_score_
 
 
-# In[35]:
+# In[41]:
 
 
 bag_clf.oob_decision_function_
 
 
-# In[36]:
+# In[42]:
 
 
 from sklearn.metrics import accuracy_score
@@ -360,21 +405,21 @@ accuracy_score(y_test, y_pred)
 
 # ## Feature importance
 
-# In[37]:
+# In[43]:
 
 
 from sklearn.datasets import fetch_mldata
 mnist = fetch_mldata('MNIST original')
 
 
-# In[38]:
+# In[44]:
 
 
 rnd_clf = RandomForestClassifier(random_state=20130810)
 rnd_clf.fit(mnist["data"], mnist["target"])
 
 
-# In[39]:
+# In[45]:
 
 
 def plot_digit(data):
@@ -384,7 +429,7 @@ def plot_digit(data):
     plt.axis("off")
 
 
-# In[40]:
+# In[46]:
 
 
 plot_digit(rnd_clf.feature_importances_)
@@ -398,7 +443,7 @@ plt.show()
 
 # # AdaBoost
 
-# In[41]:
+# In[ ]:
 
 
 from sklearn.ensemble import AdaBoostClassifier
@@ -409,13 +454,13 @@ ada_clf = AdaBoostClassifier(
 ada_clf.fit(X_train, y_train)
 
 
-# In[42]:
+# In[ ]:
 
 
 plot_decision_boundary(ada_clf, X, y)
 
 
-# In[43]:
+# In[ ]:
 
 
 m = len(X_train)
@@ -442,7 +487,7 @@ save_fig("boosting_plot")
 plt.show()
 
 
-# In[44]:
+# In[ ]:
 
 
 list(m for m in dir(ada_clf) if not m.startswith("_") and m.endswith("_"))
@@ -450,7 +495,7 @@ list(m for m in dir(ada_clf) if not m.startswith("_") and m.endswith("_"))
 
 # # Gradient Boosting
 
-# In[46]:
+# In[47]:
 
 
 np.random.seed(20130810)
@@ -458,7 +503,7 @@ X = np.random.rand(100, 1) - 0.5
 y = 3*X[:, 0]**2 + 0.05 * np.random.randn(100)
 
 
-# In[47]:
+# In[48]:
 
 
 from sklearn.tree import DecisionTreeRegressor
@@ -469,7 +514,7 @@ tree_reg1.fit(X, y)
 
 # The second tree is fit to the residuals from the first
 
-# In[48]:
+# In[49]:
 
 
 y2 = y - tree_reg1.predict(X)
@@ -479,7 +524,7 @@ tree_reg2.fit(X, y2)
 
 # The third tree is fit to the residuals from the second and so on...
 
-# In[49]:
+# In[50]:
 
 
 y3 = y2 - tree_reg2.predict(X)
@@ -487,25 +532,25 @@ tree_reg3 = DecisionTreeRegressor(max_depth=2, random_state=42)
 tree_reg3.fit(X, y3)
 
 
-# In[50]:
+# In[51]:
 
 
 X_new = np.array([[0.8]])
 
 
-# In[51]:
+# In[52]:
 
 
 y_pred = sum(tree.predict(X_new) for tree in (tree_reg1, tree_reg2, tree_reg3))
 
 
-# In[52]:
+# In[53]:
 
 
 y_pred
 
 
-# In[53]:
+# In[54]:
 
 
 def plot_predictions(regressors, X, y, axes, label=None, style="r-", data_style="b.", data_label=None):
@@ -551,7 +596,9 @@ save_fig("gradient_boosting_plot")
 plt.show()
 
 
-# In[54]:
+# Notice how we are getting closer conceptually to hidden layers. There are a succession of layers each fitted on the errors from the previous layer
+
+# In[55]:
 
 
 from sklearn.ensemble import GradientBoostingRegressor
@@ -563,7 +610,7 @@ gbrt = GradientBoostingRegressor(max_depth=2,
 gbrt.fit(X, y)
 
 
-# In[55]:
+# In[56]:
 
 
 gbrt_slow = GradientBoostingRegressor(max_depth=2, 
@@ -573,7 +620,7 @@ gbrt_slow = GradientBoostingRegressor(max_depth=2,
 gbrt_slow.fit(X, y)
 
 
-# In[56]:
+# In[57]:
 
 
 plt.figure(figsize=(11,4))
@@ -592,7 +639,7 @@ plt.show()
 
 # ## Gradient Boosting with Early stopping
 
-# In[57]:
+# In[58]:
 
 
 import numpy as np
@@ -600,10 +647,14 @@ from sklearn.model_selection import train_test_split
 from sklearn.metrics import mean_squared_error
 
 
-# In[58]:
+# In[59]:
 
 
-X_train, X_val, y_train, y_val = train_test_split(X, y, random_state=49)
+X_train, X_val, y_train, y_val = train_test_split(X, y, random_state=20130810)
+
+
+# In[60]:
+
 
 gbrt = GradientBoostingRegressor(max_depth=2, 
                                  n_estimators=120, 
@@ -611,7 +662,7 @@ gbrt = GradientBoostingRegressor(max_depth=2,
 gbrt.fit(X_train, y_train)
 
 
-# In[59]:
+# In[61]:
 
 
 errors = [mean_squared_error(y_val, y_pred)
@@ -624,16 +675,16 @@ gbrt_best = GradientBoostingRegressor(max_depth=2,
 gbrt_best.fit(X_train, y_train)
 
 
-# In[60]:
+# In[62]:
 
 
 min_error = np.min(errors)
 
 
-# In[61]:
+# In[65]:
 
 
-plt.figure(figsize=(11, 4))
+plt.figure(figsize=(12, 6))
 
 plt.subplot(121)
 plt.plot(errors, "b.-")
@@ -653,7 +704,7 @@ save_fig("early_stopping_gbrt_plot")
 plt.show()
 
 
-# In[62]:
+# In[66]:
 
 
 gbrt = GradientBoostingRegressor(max_depth=2, 
@@ -676,13 +727,13 @@ for n_estimators in range(1, 120):
             break  # early stopping
 
 
-# In[63]:
+# In[67]:
 
 
 print(gbrt.n_estimators)
 
 
-# In[64]:
+# In[68]:
 
 
 print("Minimum validation MSE:", min_val_error)
@@ -690,7 +741,7 @@ print("Minimum validation MSE:", min_val_error)
 
 # ## Using XGBoost
 
-# In[66]:
+# In[ ]:
 
 
 try:
@@ -700,7 +751,7 @@ except ImportError as ex:
     xgboost = None
 
 
-# In[67]:
+# In[ ]:
 
 
 if xgboost is not None:  # not shown in the book
@@ -711,7 +762,7 @@ if xgboost is not None:  # not shown in the book
     print("Validation MSE:", val_error)
 
 
-# In[68]:
+# In[ ]:
 
 
 if xgboost is not None:  # not shown in the book
@@ -722,13 +773,13 @@ if xgboost is not None:  # not shown in the book
     print("Validation MSE:", val_error)
 
 
-# In[69]:
+# In[ ]:
 
 
 get_ipython().magic('timeit xgboost.XGBRegressor().fit(X_train, y_train) if xgboost is not None else None')
 
 
-# In[70]:
+# In[ ]:
 
 
 get_ipython().magic('timeit GradientBoostingRegressor().fit(X_train, y_train)')
@@ -744,25 +795,25 @@ get_ipython().magic('timeit GradientBoostingRegressor().fit(X_train, y_train)')
 
 # Exercise: _Load the MNIST data and split it into a training set, a validation set, and a test set (e.g., use 50,000 instances for training, 10,000 for validation, and 10,000 for testing)._
 
-# In[71]:
+# In[70]:
 
 
 from sklearn.datasets import fetch_mldata
 
 
-# In[72]:
+# In[71]:
 
 
 mnist = fetch_mldata('MNIST original')
 
 
-# In[73]:
+# In[72]:
 
 
 from sklearn.model_selection import train_test_split
 
 
-# In[74]:
+# In[73]:
 
 
 X_train_val, X_test, y_train_val, y_test = train_test_split(
@@ -773,7 +824,7 @@ X_train, X_val, y_train, y_val = train_test_split(
 
 # Exercise: _Then train various classifiers, such as a Random Forest classifier, an Extra-Trees classifier, and an SVM._
 
-# In[75]:
+# In[74]:
 
 
 from sklearn.ensemble import RandomForestClassifier, ExtraTreesClassifier
@@ -781,7 +832,7 @@ from sklearn.svm import LinearSVC
 from sklearn.neural_network import MLPClassifier
 
 
-# In[76]:
+# In[75]:
 
 
 random_forest_clf = RandomForestClassifier(random_state=20130810)
@@ -790,7 +841,7 @@ svm_clf = LinearSVC(random_state=20130810)
 mlp_clf = MLPClassifier(random_state=20130810)
 
 
-# In[77]:
+# In[76]:
 
 
 estimators = [random_forest_clf, extra_trees_clf, svm_clf, mlp_clf]
@@ -799,7 +850,7 @@ for estimator in estimators:
     estimator.fit(X_train, y_train)
 
 
-# In[78]:
+# In[77]:
 
 
 [estimator.score(X_val, y_val) for estimator in estimators]
@@ -809,7 +860,7 @@ for estimator in estimators:
 
 # Exercise: _Next, try to combine them into an ensemble that outperforms them all on the validation set, using a soft or hard voting classifier._
 
-# In[79]:
+# In[78]:
 
 
 from sklearn.ensemble import VotingClassifier
@@ -818,12 +869,10 @@ from sklearn.ensemble import VotingClassifier
 # In[80]:
 
 
-named_estimators = [
-    ("random_forest_clf", random_forest_clf),
-    ("extra_trees_clf", extra_trees_clf),
-    ("svm_clf", svm_clf),
-    ("mlp_clf", mlp_clf),
-]
+named_estimators = [("random_forest_clf", random_forest_clf),
+                    ("extra_trees_clf", extra_trees_clf),
+                    ("svm_clf", svm_clf),
+                    ("mlp_clf", mlp_clf)]
 
 
 # In[81]:
@@ -890,7 +939,7 @@ del voting_clf.estimators_[2]
 
 # Now let's evaluate the `VotingClassifier` again:
 
-# In[90]:
+# In[ ]:
 
 
 voting_clf.score(X_val, y_val)
@@ -898,13 +947,13 @@ voting_clf.score(X_val, y_val)
 
 # Much better! The SVM was hurting performance. Now let's try using a soft voting classifier. We do not actually need to retrain the classifier, we can just set `voting` to `"soft"`:
 
-# In[91]:
+# In[ ]:
 
 
 voting_clf.voting = "soft"
 
 
-# In[92]:
+# In[ ]:
 
 
 voting_clf.score(X_val, y_val)
@@ -914,13 +963,13 @@ voting_clf.score(X_val, y_val)
 
 # _Once you have found one, try it on the test set. How much better does it perform compared to the individual classifiers?_
 
-# In[93]:
+# In[ ]:
 
 
 voting_clf.score(X_test, y_test)
 
 
-# In[94]:
+# In[ ]:
 
 
 [estimator.score(X_test, y_test) for estimator in voting_clf.estimators_]
@@ -932,7 +981,7 @@ voting_clf.score(X_test, y_test)
 
 # Exercise: _Run the individual classifiers from the previous exercise to make predictions on the validation set, and create a new training set with the resulting predictions: each training instance is a vector containing the set of predictions from all your classifiers for an image, and the target is the image's class. Train a classifier on this new training set._
 
-# In[95]:
+# In[69]:
 
 
 X_val_predictions = np.empty((len(X_val), len(estimators)), dtype=np.float32)
@@ -941,20 +990,20 @@ for index, estimator in enumerate(estimators):
     X_val_predictions[:, index] = estimator.predict(X_val)
 
 
-# In[96]:
+# In[ ]:
 
 
 X_val_predictions
 
 
-# In[97]:
+# In[ ]:
 
 
 rnd_forest_blender = RandomForestClassifier(n_estimators=200, oob_score=True, random_state=42)
 rnd_forest_blender.fit(X_val_predictions, y_val)
 
 
-# In[98]:
+# In[ ]:
 
 
 rnd_forest_blender.oob_score_
@@ -964,7 +1013,7 @@ rnd_forest_blender.oob_score_
 
 # Exercise: _Congratulations, you have just trained a blender, and together with the classifiers they form a stacking ensemble! Now let's evaluate the ensemble on the test set. For each image in the test set, make predictions with all your classifiers, then feed the predictions to the blender to get the ensemble's predictions. How does it compare to the voting classifier you trained earlier?_
 
-# In[99]:
+# In[ ]:
 
 
 X_test_predictions = np.empty((len(X_test), len(estimators)), dtype=np.float32)
@@ -973,19 +1022,19 @@ for index, estimator in enumerate(estimators):
     X_test_predictions[:, index] = estimator.predict(X_test)
 
 
-# In[100]:
+# In[ ]:
 
 
 y_pred = rnd_forest_blender.predict(X_test_predictions)
 
 
-# In[101]:
+# In[ ]:
 
 
 from sklearn.metrics import accuracy_score
 
 
-# In[102]:
+# In[ ]:
 
 
 accuracy_score(y_test, y_pred)
